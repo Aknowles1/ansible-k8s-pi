@@ -1,0 +1,14 @@
+[all]
+master ansible_host=127.0.0.1 ansible_port=3022 ansible_user=aknowles
+node1 ansible_host=127.0.0.1 ansible_port=3023 ansible_user=aknowles
+
+[master]
+master ansible_host=127.0.0.1 ansible_port=3022 ansible_user=aknowles
+
+
+[nodes]
+node1 ansible_host=127.0.0.1 ansible_port=3023 ansible_user=aknowles
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=aknowles

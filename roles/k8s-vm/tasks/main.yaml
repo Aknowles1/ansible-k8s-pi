@@ -1,0 +1,46 @@
+- name: install k3s on master instances
+  hosts: all
+
+  tasks:
+
+      - local_action: file path=../files/node_token state=absent
+
+      - name: Download k3s
+        get_url:
+          url: https://get.k3s.io 
+          dest: /home/aknowles/installk3s.sh
+          mode: '0700'
+
+- name: Install k3s on master node
+  hosts: master
+
+  tasks:
+
+      - name: Install k3s
+        command: "/home/aknowles/installk3s.sh"
+        become: yes
+
+      - name: Load data
+        slurp:
+          src: /var/lib/rancher/k3s/server/node-token
+        register: slurped_user_data
+        become: yes
+
+      - name: Decode data and store as fact
+        set_fact:
+          slurped_node_token: "{{ slurped_user_data.content | b64decode}}"
+
+      - local_action: copy content={{ slurped_node_token }} dest=../files/node_token
+
+- name: Install k3s on worker nodes
+  hosts: nodes
+
+  tasks:
+
+      - name: Read node token from file
+        set_fact:
+          node_token: "{{lookup('file', '../files/node_token') }}"
+
+      - name: Install k3s on nodes
+        command: "/home/aknowles/installk3s.sh -s https://192.168.99.10:6443 -t {{ node_token }}"
+        become: yes
