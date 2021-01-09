@@ -50,3 +50,28 @@
       - name: Install k3s on nodes
         command: "/home/ubuntu/k3s-agent.sh"
         become: yes
+
+- name: Install k3s on jetson node(s)
+  hosts: jetson
+
+  tasks:
+
+      - name: Download k3s
+        get_url:
+          url: https://get.k3s.io 
+          dest: /home/jetson/installk3s.sh
+          mode: '0700'
+
+      - name: Read node token from file
+        set_fact:
+          node_token: "{{lookup('file', '../files/node_token') }}"
+
+      - name: Ansible Template Example
+        template:
+          src: k3s-agent.sh
+          dest: /home/jetson/k3s-agent.sh
+          mode: 0777
+
+      - name: Install k3s on nodes
+        command: "/home/jetson/k3s-agent.sh"
+        become: yes
