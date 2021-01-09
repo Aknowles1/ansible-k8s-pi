@@ -1,5 +1,5 @@
 - name: install k3s on master instances
-  hosts: all
+  hosts: master nodes
 
   tasks:
 
@@ -8,7 +8,7 @@
       - name: Download k3s
         get_url:
           url: https://get.k3s.io 
-          dest: /home/aknowles/installk3s.sh
+          dest: /home/ubuntu/installk3s.sh
           mode: '0700'
 
 - name: Install k3s on master node
@@ -17,7 +17,7 @@
   tasks:
 
       - name: Install k3s
-        command: "/home/aknowles/installk3s.sh"
+        command: "/home/ubuntu/installk3s.sh"
         become: yes
 
       - name: Load data
@@ -41,6 +41,12 @@
         set_fact:
           node_token: "{{lookup('file', '../files/node_token') }}"
 
+      - name: Ansible Template Example
+        template:
+          src: k3s-agent.sh
+          dest: /home/ubuntu/k3s-agent.sh
+          mode: 0777
+
       - name: Install k3s on nodes
-        command: "/home/aknowles/installk3s.sh -s https://192.168.99.10:6443 -t {{ node_token }}"
+        command: "/home/ubuntu/k3s-agent.sh"
         become: yes
