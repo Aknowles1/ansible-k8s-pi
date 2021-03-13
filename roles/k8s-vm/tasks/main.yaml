@@ -1,4 +1,4 @@
-- name: install k3s on master instances
+- name: Base config for master + nodes
   hosts: master nodes
 
   tasks:
@@ -11,13 +11,19 @@
           dest: /home/ubuntu/installk3s.sh
           mode: '0700'
 
+      - name: Copy new cmdline.txt file over
+        copy:
+          src: .../files/cmdline.txt
+          dest: /boot/firmware/cmdline.txt
+          follow: yes
+
 - name: Install k3s on master node
   hosts: master
 
   tasks:
 
       - name: Install k3s
-        command: "/home/ubuntu/installk3s.sh"
+        command: "/home/ubuntu/installk3s.sh --disable servicelb --no-deploy traefik"
         become: yes
 
       - name: Load data
@@ -48,7 +54,7 @@
           mode: 0777
 
       - name: Install k3s on nodes
-        command: "/home/ubuntu/k3s-agent.sh"
+        command: "/home/ubuntu/k3s-agent.sh --disable servicelb --no-deploy traefik"
         become: yes
 
 - name: Install k3s on jetson node(s)
@@ -73,5 +79,5 @@
           mode: 0777
 
       - name: Install k3s on nodes
-        command: "/home/jetson/k3s-agent.sh"
+        command: "/home/jetson/k3s-agent.sh --disable servicelb --no-deploy traefik"
         become: yes
