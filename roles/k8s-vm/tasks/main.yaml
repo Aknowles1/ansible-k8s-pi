@@ -13,18 +13,23 @@
 
       - name: Copy new cmdline.txt file over
         copy:
-          src: .../files/cmdline.txt
+          src: ../files/cmdline.txt
           dest: /boot/firmware/cmdline.txt
           follow: yes
+        become: yes
 
 - name: Install k3s on master node
   hosts: master
 
   tasks:
 
+      - name: Set Hostname
+        command: hostnamectl set-hostname pi-control-plane
+        become: yes
+
       - name: Install k3s
         command: "/home/ubuntu/installk3s.sh --disable servicelb --no-deploy traefik"
-        become: yes
+        
 
       - name: Load data
         slurp:
