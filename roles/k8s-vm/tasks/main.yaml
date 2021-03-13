@@ -86,3 +86,10 @@
       - name: Install k3s on nodes
         command: "/home/jetson/k3s-agent.sh --disable servicelb --no-deploy traefik"
         become: yes
+
+- name: Blank local node_token file
+  hosts: nodes
+
+  tasks:
+
+      - local_action: copy content="" dest=../files/node_token
